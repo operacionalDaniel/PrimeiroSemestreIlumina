@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BI · Operações de Iluminação Pública — Içara</title>
+  <meta name="description" content="Painel executivo de materiais aplicados, pontos instalados por rede e equipamentos sem cadastro — Içara / SC."/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" defer></script>
+  <script src="data/dados.js"></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" aria-hidden="true">
+        <polyline points="2,14 6,8 10,11 14,4"/>
+        <circle cx="14" cy="4" r="1.5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Painel de Operações — Iluminação Pública</div>
+      <div class="logo-sub" id="meta-municipio">Içara · SC</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="date-range">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="meta-periodo">Janeiro – Maio 2026</span>
+    </span>
+    <span class="badge badge-green">100% Confirmado</span>
+    <span class="badge badge-blue" id="meta-atualizado">Atualizado 28/05/2026</span>
+  </div>
+</header>
+
+<!-- ── NAV ─────────────────────────────────────────────────────────────────── -->
+<nav class="nav" role="navigation" aria-label="Seções do painel">
+  <button class="tab active" onclick="showPage('overview',this)">Visão Geral</button>
+  <button class="tab" onclick="showPage('materiais',this)">Materiais &amp; Equipes</button>
+  <button class="tab" onclick="showPage('redes',this)">Pontos por Rede</button>
+  <button class="tab" onclick="showPage('cadastro',this)">Sem Cadastro</button>
+  <button class="tab" onclick="showPage('custos',this)">Custos</button>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     PAGE 1  —  VISÃO GERAL
+════════════════════════════════════════════════════════════════════════════ -->
+<main class="page active" id="page-overview" role="main">
+
+  <div class="kpis kpis-6">
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--blue-l)" aria-hidden="true">📋</div>
+      <div class="kpi-label">Atendimentos</div>
+      <div class="kpi-val" id="kpi-atendimentos">—</div>
+      <div class="kpi-sub">ordens distintas</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--violet-l)" aria-hidden="true">📦</div>
+      <div class="kpi-label">Materiais Aplicados</div>
+      <div class="kpi-val" id="kpi-materiais">—</div>
+      <div class="kpi-sub">itens no período</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--teal-l)" aria-hidden="true">🔧</div>
+      <div class="kpi-label">Equipes Ativas</div>
+      <div class="kpi-val" id="kpi-equipes">—</div>
+      <div class="kpi-sub">Equipe 01 e 02</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--green-l)" aria-hidden="true">✅</div>
+      <div class="kpi-label">Taxa Confirmação</div>
+      <div class="kpi-val" id="kpi-confirmacao">—</div>
+      <div class="kpi-sub"><b>0</b> pendentes</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--amber-l)" aria-hidden="true">💡</div>
+      <div class="kpi-label">Pontos Instalados</div>
+      <div class="kpi-val" id="kpi-pontos">—</div>
+      <div class="kpi-sub">total nas redes</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--red-l)" aria-hidden="true">⚠️</div>
+      <div class="kpi-label">Sem Cadastro</div>
+      <div class="kpi-val" id="kpi-semcad">—</div>
+      <div class="kpi-sub">170 transmitindo</div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <div class="card">
+      <div class="card-title">Evolução mensal — Atendimentos e Materiais</div>
+      <div class="legend">
+        <span class="leg"><span class="leg-sq" style="background:#2563EB"></span>Equipe 01</span>
+        <span class="leg"><span class="leg-sq" style="background:#0D9488"></span>Equipe 02</span>
+        <span class="leg"><span class="leg-sq" style="background:#7C3AED;opacity:.5"></span>Materiais (eixo dir.)</span>
+      </div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="c-evolucao" role="img" aria-label="Evolução mensal de atendimentos por equipe e total de materiais">
+          Equipe 01: Jan 65, Fev 40, Mar 53, Abr 149, Mai 115.
+          Equipe 02: Jan 116, Fev 52, Mar 54, Abr 26, Mai 51.
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Motivos de chamado</div>
+      <div class="donut-wrap">
+        <div class="chart-wrap" style="height:200px">
+          <canvas id="c-motivos" role="img" aria-label="Distribuição percentual por motivo de atendimento">
+            Lâmpada queimada 41,7%; Relê queimado 40,7%; LED/Luminária 8,3%; Conexão 7,3%; Outros 1,9%.
+          </canvas>
+        </div>
+        <div class="donut-center" aria-hidden="true">
+          <div class="donut-center-val">987</div>
+          <div class="donut-center-lbl">registros</div>
+        </div>
+      </div>
+      <div class="legend" style="margin-top:10px;margin-bottom:0;flex-direction:column;gap:6px">
+        <span class="leg"><span class="leg-sq" style="background:#2563EB"></span>Lâmpada queimada — 412 (41,7%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#0D9488"></span>Relê queimado — 402 (40,7%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#F59E0B"></span>LED / Luminária — 82 (8,3%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#7C3AED"></span>Conexão — 72 (7,3%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#9CA3AF"></span>Outros — 19 (1,9%)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Top 8 bairros por atendimentos</div>
+      <div class="hbars" id="bairro-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top materiais mais utilizados</div>
+      <div class="hbars" id="mat-bars-ov"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     PAGE 2  —  MATERIAIS & EQUIPES
+════════════════════════════════════════════════════════════════════════════ -->
+<main class="page" id="page-materiais">
+
+  <h2 class="section-hdr" style="margin-top:1.5rem">Desempenho das Equipes</h2>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Participação por equipe</div>
+      <div class="equipe-row" id="equipe-row"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Atendimentos por equipe — mensal</div>
+      <div class="chart-wrap" style="height:160px">
+        <canvas id="c-equipe-mes" role="img" aria-label="Atendimentos mensais comparados entre Equipe 01 e Equipe 02">
+          Equipe 01: Jan 65, Fev 40, Mar 53, Abr 149, Mai 115. Equipe 02: Jan 116, Fev 52, Mar 54, Abr 26, Mai 51.
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-hdr">Materiais Aplicados</h2>
+
+  <div class="grid-1-2">
+    <div class="card">
+      <div class="card-title">Distribuição por categoria</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="c-cat" role="img" aria-label="Distribuição de materiais por categoria">
+          Relês 44,9%; Conectores 23%; Luminárias 19,7%; Lâmpadas 6,1%; Outros 6,3%.
+        </canvas>
+      </div>
+      <div class="legend" style="margin-top:10px;margin-bottom:0;flex-direction:column;gap:5px">
+        <span class="leg"><span class="leg-sq" style="background:#2563EB"></span>Relês fotoelétricos — 477 (44,9%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#F59E0B"></span>Luminárias LED — 209 (19,7%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#0D9488"></span>Conectores — 244 (23,0%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#7C3AED"></span>Lâmpadas sódio — 65 (6,1%)</span>
+        <span class="leg"><span class="leg-sq" style="background:#9CA3AF"></span>Outros — 67 (6,3%)</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tabela completa de materiais</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Código</th><th>Descrição</th><th class="r">Qtd Total</th><th>Categoria</th>
+            </tr>
+          </thead>
+          <tbody id="mat-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Volume de materiais por mês</div>
+    <div class="chart-wrap" style="height:220px">
+      <canvas id="c-mat-mes" role="img" aria-label="Materiais aplicados por mês empilhados por categoria">
+        Jan: 274 itens. Fev: 140. Mar: 175. Abr: 227. Mai: 246.
+      </canvas>
+    </div>
+  </div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     PAGE 3  —  PONTOS POR REDE
+════════════════════════════════════════════════════════════════════════════ -->
+<main class="page" id="page-redes">
+
+  <div class="kpis kpis-5" style="margin-top:1.5rem">
+    <div class="kpi"><div class="kpi-label">Total instalados</div><div class="kpi-val">15.920</div><div class="kpi-sub">pontos ativos</div></div>
+    <div class="kpi"><div class="kpi-label">Com cadastro</div><div class="kpi-val">15.750</div><div class="kpi-sub">98,9% do total</div></div>
+    <div class="kpi"><div class="kpi-label">Sem cadastro</div><div class="kpi-val">170</div><div class="kpi-sub">1,1% — transmitindo</div></div>
+    <div class="kpi"><div class="kpi-label">Redes ativas</div><div class="kpi-val">45</div><div class="kpi-sub">+1 nova (Rede 50)</div></div>
+    <div class="kpi"><div class="kpi-label">Sem dados</div><div class="kpi-val">2</div><div class="kpi-sub">Rede 39 e 43</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Top 15 redes por pontos instalados</div>
+      <div class="chart-wrap" style="height:400px">
+        <canvas id="c-redes-bar" role="img" aria-label="Top 15 redes por pontos instalados, segmentado entre cadastrados e sem cadastro">
+          Rede 24 lidera com 567 pontos. Seguida de Rede 3 com 562 e Rede 8 com 533.
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Redes com pontos sem cadastro</div>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="c-sem-cad" role="img" aria-label="Quantidade de pontos sem cadastro por rede">
+          Rede 27: 77 pontos sem cadastro. Rede 13: 44. Rede 40: 39. Rede 29: 9. Rede 31: 1.
+        </canvas>
+      </div>
+      <div style="margin-top:1.25rem">
+        <div class="card-title">Pontos cadastrados: 4G vs Fibra</div>
+        <div class="legend" style="margin-bottom:8px">
+          <span class="leg"><span class="leg-sq" style="background:#2563EB"></span>4G</span>
+          <span class="leg"><span class="leg-sq" style="background:#0D9488"></span>Fibra</span>
+        </div>
+        <div class="chart-wrap" style="height:120px">
+          <canvas id="c-tipo-rede" role="img" aria-label="Total de pontos instalados por tecnologia de rede: 4G versus Fibra"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabela completa — pontos instalados por rede</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rede</th><th>Tipo</th>
+            <th class="r">Cadastrados</th><th class="r">Sem cadastro</th>
+            <th class="r">Total</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="rede-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     PAGE 4  —  SEM CADASTRO
+════════════════════════════════════════════════════════════════════════════ -->
+<main class="page" id="page-cadastro">
+
+  <div class="kpis kpis-4" style="margin-top:1.5rem">
+    <div class="kpi">
+      <div class="kpi-label">Total sem cadastro</div>
+      <div class="kpi-val" id="kpi-sc-total">—</div>
+      <div class="kpi-sub">equipamentos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Transmitindo ativos</div>
+      <div class="kpi-val" id="kpi-sc-transm" style="color:var(--amber)">—</div>
+      <div class="kpi-sub">91,4% — com comunicação</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Sem comunicação</div>
+      <div class="kpi-val" id="kpi-sc-offline" style="color:var(--red)">—</div>
+      <div class="kpi-sub">8,6% — offline</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Encontrados no SGI</div>
+      <div class="kpi-val" id="kpi-sc-sgi" style="color:var(--green)">—</div>
+      <div class="kpi-sub">de 186 — 99,5%</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Distribuição por rede de comunicação</div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="c-transm-rede" role="img" aria-label="Distribuição dos 186 pontos sem cadastro por rede de comunicação">
+          Rede 27: 77. Rede 13: 44. Rede 40: 39. Rede 29: 9. Rede 31: 1. Sem comunicação: 16.
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Localização geográfica (SGI)</div>
+      <div class="hbars" id="bairro-sc-bars"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Detalhamento por rede — sem cadastro</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rota de comunicação</th>
+            <th class="r">Transmitindo</th>
+            <th class="r">Sem comunicação</th>
+            <th class="r">Total</th>
+            <th>% do total</th>
+          </tr>
+        </thead>
+        <tbody id="sc-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ════════════════════════════════════════════════════════════════════════════
+     PAGE 5  —  CUSTOS
+════════════════════════════════════════════════════════════════════════════ -->
+<main class="page" id="page-custos">
+
+  <div class="kpis kpis-4" style="margin-top:1.5rem">
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--green-l)" aria-hidden="true">💰</div>
+      <div class="kpi-label">Custo Total do Período</div>
+      <div class="kpi-val" id="kpi-custo-total">—</div>
+      <div class="kpi-sub">Jan – Mai 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--blue-l)" aria-hidden="true">📅</div>
+      <div class="kpi-label">Média Mensal</div>
+      <div class="kpi-val" id="kpi-custo-medio-mes">—</div>
+      <div class="kpi-sub">por mês</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--amber-l)" aria-hidden="true">📆</div>
+      <div class="kpi-label">Média Semanal</div>
+      <div class="kpi-val" id="kpi-custo-medio-sem">—</div>
+      <div class="kpi-sub">por semana (21 sem.)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon" style="background:var(--violet-l)" aria-hidden="true">🏆</div>
+      <div class="kpi-label">Material Mais Caro</div>
+      <div class="kpi-val" style="font-size:14px;font-weight:700">Relê SGIP</div>
+      <div class="kpi-sub">R$ 106.952 · 55,9% do total</div>
+    </div>
+  </div>
+
+  <div class="grid-2-1">
+    <div class="card">
+      <div class="card-title">Custo mensal — por equipe</div>
+      <div class="legend">
+        <span class="leg"><span class="leg-sq" style="background:#2563EB"></span>Equipe 01</span>
+        <span class="leg"><span class="leg-sq" style="background:#0D9488"></span>Equipe 02</span>
+        <span class="leg"><span class="leg-sq" style="background:#7C3AED;opacity:.4"></span>Total (linha)</span>
+      </div>
+      <div class="chart-wrap" style="height:240px">
+        <canvas id="c-custo-mensal" role="img" aria-label="Custo mensal de materiais por equipe com linha de total">
+          Jan R$33.939; Fev R$27.117; Mar R$30.705; Abr R$53.701; Mai R$45.773.
+        </canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Custo por categoria</div>
+      <div class="chart-wrap" style="height:200px">
+        <canvas id="c-custo-cat" role="img" aria-label="Distribuição do custo total por categoria de material">
+          Relê 56,1%; Luminária LED 40,2%; demais 3,7%.
+        </canvas>
+      </div>
+      <div class="legend" style="margin-top:10px;margin-bottom:0;flex-direction:column;gap:5px" id="leg-cat-custo"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Custo semanal — Jan a Mai 2026</div>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="c-custo-semanal" role="img" aria-label="Custo semanal de materiais aplicados ao longo do período">
+        Pico na semana de 06/04 com R$18.954. Menor na semana de 29/12 com R$835.
+      </canvas>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Custo por equipe — período completo</div>
+      <div id="equipe-custo-blocks" style="padding:4px 0"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 8 materiais por custo total</div>
+      <div class="hbars" id="custo-mat-bars"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tabela completa — custo unitário e total por material</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th class="r">Qtd</th>
+            <th class="r">Custo Unit. (R$)</th>
+            <th class="r">Custo Total (R$)</th>
+            <th class="r">% do Total</th>
+          </tr>
+        </thead>
+        <tbody id="custo-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ────────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+  <span>Painel de Operações — Iluminação Pública · Içara · SC</span>
+  <span>Dados: SGI + Relatório de Últimas Transmissões · Jan–Mai 2026</span>
+  <span>Gerado em 28/05/2026</span>
+</footer>
+
+</body>
+</html>
